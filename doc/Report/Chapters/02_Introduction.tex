@@ -1,0 +1,64 @@
+In recent years there been  a significant interest in word embedding methods. Among all methods the Word2Vec \cite{NIPS2013_5021} has gained significant attention in the community. This attention is in way that almost Word2Vec methods (both Skip Gram and CBOW) became the de-facto standards of these field. In \cite{NIPS2014_5477} The authors show a very interesting property on SGNS, that it is equivalent of performing matrix factorization over shifted PPMI matrix.  Although in practice the implicit matrix factorization never outperform over SGNS, but at least gives us the clue that, methods with matrix factorization approach are still worthwhile to be explored. 
+
+\subsection{Persian Language Embeddings}
+Unfortunately very few is done in Word Embedding evaluation in Persian language.  This includes standard datasets and benchmarks to show  were we are standing, regarding the performance of embedding methods. 
+Before this project we started a class assignment project to build up the grounds for  evaluating the existing models.  This activity included following: 
+\begin{itemize}
+    \item Build standard web scale corpora 
+    \item Build datasets to assess the embedding models for various tasks (Analogy, Categorization, Word Similarity)
+    \item Write Scripts to evaluate the models against the datasets. 
+\end{itemize} 
+
+As result of the same project we aimed to build models to gain the  highest scores in various tasks. But unfortunately the results were  significantly below what we expected.  
+
+\begin{table}
+    \centering
+    \caption{Best result for Analaogy Task}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Category	& Total Tokens	 & fastext-skipgram-100 \\
+        \hline
+        semantic-capitals	& 4691	& 3514 \\
+        semantic-Whole to part &	420 & 	68 \\
+        semantic-family	& 600	& 349 \\
+        semantic-currency	& 6006&	1298 \\
+        syntactic-Comparative Adjectives	&2756	&1927 \\
+        syntactic-antonym	&506	&239 \\
+        syntactic-Superlative Adjectives&	2756	&1611 \\
+        syntactic-verb	&1964 &	708  \\ 
+        \hline
+        Total & 19699 & 9714 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+Compared to what \textbf{CITATION NEEDED} This result is one of the best results  in Persian language. In that article the highest analogy performance reported is which is around $49$. Although this result has been acquired because of high tolerance value in analogy task. It accepts the answer if it is in top 50 closest neighbours of the target vector. 
+
+This means in Persian language the baseline is much lower compared to achievements reported in  English literature.  This might have two main reasons. Either the available resources in Persian are not as rich as resources in English and or the structure of language requires different approach,  for modelling. 
+
+
+In this project our aim is to explore the matrix factorization methods to see, if we can reach a higher ground compared to what  has been achieved in other tasks. 
+
+
+\subsection{Word Embedding as Matrix Factorization}
+
+In \cite{NIPS2014_5477} it is shown that SGNS is equivalent to perform matrix factorization on  following matrix: 
+
+\begin{equation}
+    M^{PPMI} (i,j) = max(0 , PMI(w_i , w_j) - k )
+\end{equation}
+
+Where 
+
+\begin{equation}
+    PMI(w_i , w_j) = log \left( \frac{P(w_i, w_j)}{P(w_i)P(w_j)} \right)
+\end{equation}
+
+Once we constructed the matrix $M^{PPMI}$  then we can perform Singular Value Decomposition on it to get the embedding vectors:  
+
+\begin{equation}
+    M^{PPMI} = U \Sigma V^{T}  
+\end{equation}
+
+Now we can assume that  $W^{WORD} = U \Sigma$ is going to be our embedded vectors. 
+
