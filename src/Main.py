@@ -8,12 +8,37 @@ from scipy.sparse.linalg import  svds
 SPLIT_RE = re.compile('( |\\!|,|:|\\[|\\]|<|>|\\{|\\}|%|\\$|\\^|\\&|\\*|\\.|\\?|\\"|\\~|\\+|=،)+')
 
 
+def load_lil_from_file(tmp_file, main_matrix):
+    print('Loading pre-processed matrix : ' + tmp_file)
+    with open(tmp_file, 'r', encoding='UTF-8') as c_file:
+        line = c_file.readline()
+        while line:
+            line = line.strip('\t\r\n ')
+            parts = line.split(',')
+            if len(parts) == 3:
+                main_matrix[int(parts[0]),int(parts[1])] = float(parts[2])
+            line = c_file.readline()
+
+def save_lil_to_file(tmp_file, main_matrix):
+    print('Saving processed matrix : ' + tmp_file)
+    with open(tmp_file, 'w', encoding='UTF-8') as c_file:
+        nnz_row, nnz_col = main_matrix.nonzero()
+
+        for ind in range(len(nnz_col)):
+            i = nnz_row[ind]
+            j = nnz_col[ind]
+            c_file.write(str(i) + ',' + str(j) + ',' + str(main_matrix[i, j]) + '\n')
+
+
 def load_corpus(corpus_file, index_dict, window_size=5):
     """This file will load the corpus file and creates the
     vocab index , as well as the  adjecency matrix of the corpus"""
-
-    print('Loading the corpus')
+    tmp_file = tmp_base + '-coo-' + str(window_size) + '.txt'
     main_matrix = sparse.lil_matrix((len(index_dict), len(index_dict)))
+    if os.path.isfile(tmp_file):
+        load_lil_from_file(tmp_file, main_matrix)
+        return main_matrix
+    print('Loading the corpus')
     line_cnt = 0
     with open(corpus_file, 'r', encoding='UTF-8') as c_file:
         line = c_file.readline()
@@ -37,8 +62,10 @@ def load_corpus(corpus_file, index_dict, window_size=5):
                             last_n.pop(0)
             line = c_file.readline()
 
-    return main_matrix + main_matrix.T
+    ret =  main_matrix + main_matrix.T
 
+    save_lil_to_file(tmp_file , ret)
+    return ret
 
 def ppmi_inplace(matrix, k = 5 ):
     """Calculates the PPMI of the matrix and replace the matrix inplace"""
@@ -129,12 +156,12 @@ def split_line(line):
     return tokens
 
 
-def build_model():
+def build_model(corpus_file, index_file, matrix_file, min_freq, window_size):
     if not os.path.isfile(index_file):
-        index = build_vocab_index_from_corpus(corpus_file, None,  100)
+        index = build_vocab_index_from_corpus(corpus_file, None,  min_freq)
         write_list_to_file(index, index_file)
     index_dict, rev_model = load_vocab_index_from_file(index_file)
-    matrix = load_corpus(corpus_file, index_dict)
+    matrix = load_corpus(corpus_file, index_dict , window_size)
     ppmi_inplace(matrix)
     print('shape matrix is ')
     print(matrix.shape)
@@ -142,13 +169,13 @@ def build_model():
     np.savetxt(matrix_file, u * s)
 
 
-def test_model():
+def test_model(index_file , matrix_file):
     data_set = src.evaluation.load_analogy('../data/analogy.csv')
     index_dict, rev_index = load_vocab_index_from_file(index_file)
     print('Loading Matrix')
     embedding_matrix = np.loadtxt(matrix_file)
 
-    #src.evaluation.run_analogy(embedding_matrix, index_dict, data_set, rev_index)
+    src.evaluation.run_analogy(embedding_matrix, index_dict, data_set, rev_index)
     test_lst = ['آمریکا' , 'ظریف' , 'خانه' ,'پول' , 'ایران' ]
     for t in test_lst:
         if t in index_dict:
@@ -161,8 +188,13 @@ if __name__ == "__main__":
     #base = 'sample'
     #base = 'bijan_khan_ut'
     base='wiki'
-    index_file =  '../data/' + base + '-index.txt'
-    matrix_file = '../data/' + base + '-vector.txt'
-    corpus_file = '../data/' + base + '.txt'
-    build_model()
-    test_model()
+    param_window_size = 10
+    param_k = 5
+    param_min_freq = 100
+    tmp_base = '../data/' + base
+    param_index_file =  tmp_base+ '-index.txt'
+    param_matrix_file = tmp_base + '-vector.txt'
+    param_corpus_file = tmp_base +  '.txt'
+
+    build_model(param_corpus_file, param_index_file, param_matrix_file,  param_min_freq , param_window_size)
+    test_model(param_index_file, param_matrix_file)
