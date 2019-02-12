@@ -198,5 +198,5 @@ if __name__ == "__main__":
     param_matrix_file = tmp_base + '-vector.txt'
     param_corpus_file = tmp_base +  '.txt'
 
-    build_model(param_corpus_file, param_index_file, param_matrix_file,  param_min_freq , param_window_size)
+    #build_model(param_corpus_file, param_index_file, param_matrix_file,  param_min_freq , param_window_size)
     test_model(param_index_file, param_matrix_file)

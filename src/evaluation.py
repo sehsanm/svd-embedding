@@ -18,7 +18,7 @@ def load_analogy(file_name):
     return dataset
 
 
-def check_analogy(embedding_matrix, rev_index , word_1, word_2, word_3, answer_index, tol=100):
+def check_analogy(embedding_matrix, rev_index , word_1, word_2, word_3, answer_index, tol=10):
     """Check the analogy """
     knn = find_knn(embedding_matrix[word_3][:] + embedding_matrix[word_2][:] - embedding_matrix[word_1][:]
                    , embedding_matrix)

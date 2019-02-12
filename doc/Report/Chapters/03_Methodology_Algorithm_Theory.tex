@@ -2,4 +2,25 @@ In this section we describe a little more technical details of the project that 
 \subsection{Sparsity}
 One of the items that are vital for this project to be successful is to keep the sparsity of the matrixes. The start of the work is from building cooccurrence matrix. And this matrix is sparse by nature. But the way that we implement the code is important as this will significantly will impact the performance of the algorithm. And if not implemented properly it might even make it impossible to run our algorithm in such scale. 
 
-We used python language and utilised \textit{SciPy} library because it supports implementation of sparse matrixes and also sparse algorithms of SVD methods. 
+We used python language and utilised \textit{SciPy} library because it supports implementation of sparse matrixes and also sparse algorithms of SVD methods. SciPy offers different types of sparse matrices and each of them are good for a reason. Fine tuning the type of the matrix was a big challenge.
+
+\subsection{Datasets}
+For this project we used the Persian Wikipedia dump. The size of the corpus is around 2GB and it contains around 17 Million sentences.  One of the drawback of this corpus is that it has lots of sentences which are related to editing the pages.  
+
+If we simply tokenize the corpus based on space to space tokenization method, the will be around 120,000 unique tokens. As this is going to significantly impact our methods, we have filtered the tokens that have less than 100 times occurrence in the corpus. This filter out all of the miss detected tokens in corpus. 
+
+
+
+\subsection{Hyper Parameters}
+One of the advantages of SVD based methods is that they have less parameters compared to neural network based methods. But still there are hyperparameters. 
+\subsubsection{Window Size}
+Window size is one of the most important hyper parameters in the setup.  Because of time constraints we got the chance to test for window size 5 but still we have to explore other values of window size. 
+
+\subsubsection{Negative Sampling (K)}
+
+When computing the shifted PPMI matrix the value $K$ to be decreased from PMI value is another hyper parameter that from experience it looks to have important impact on the result of embedding.  
+
+\subsubsection{Embedding Dimension}
+One advantage of using SVD methods is that it can give us a clue about what is the optimum dimension for the embedding space. As we are extracting the eigen values of the matrix, we can set the optimum dimension where the eigen values are approaching small values or we face a plateau in values.  This reduces one of the dimensions of  our hyper parameter space.  
+
+

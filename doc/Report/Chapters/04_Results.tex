@@ -1,0 +1,70 @@
+In this section although the final result. Before we deep dive into the final result, I want to talk about the journey we had so far with this project.  
+\subsection{Practical Challenges}
+As we have started the project from scratch,  majority of the time has been dedicated to get the pipeline ready. Lots of bits and pieces been put together to have a running pipeline. Although as we will see later the results are not as the best results we have for embedding. But at least we have paved the road for next steps that need to be taken to fine tune these methods to be form new baselines. 
+
+\subsubsection{Processing Time}
+Although the method itself is faster compared to SGNS and CBOW methods, but in this project just building a co-occurency matrix was taking around 20 hours. This was due to use of sparse matrices. Some study been done to fine tune this we finally reach 8 hour time to build the cooccurrence matrix.  Still modification can been done to reduce this time to less than hour. 
+One of the future steps for this project is to perform such optimizations to make the research much more feasible. 
+
+Another optimization done to do this job was to  store intermediate states in the files. Significant amount of time was wasted on  runtime errors that happened during the execution.  So from some point I decided to  store every output as a file so the process can resume from where it stopped or failed.
+
+\subsubsection{Embedding Vectors}
+Initially we were just using the eigen vectors as embedding vectors. which meant $W^{WORD} = U$. Unfortunately this produced a very poor result. To be honest this result was very close to random. 
+
+After doing research, and look at other articles we realized that we must incorporate the eigen vectors as well. So we tried $W^{WORD} = U \Sigma$. This led to much more acceptable result in our work. In footnote the \cite{NIPS2014_5477} suggest to explore formulations like $W^{WORD} = U (\Sigma)^{\alpha}$  To play around the impact. From our learning it look like that the eigen values  have significant impact on output. 
+
+\subsection{Baseline Result}
+Considering the practical challenges we talked about. Number of  full end-to-end execution the we have for this framework is limited. Actually by the time this report is written we have only one setting run that is at least working.  Here we will be discussing the result of this run. But you should have it in mind that this is the baseline run and there is a plenty of room to improve as we have control over the full process. 
+
+\subsubsection{Hyper Parameters}
+
+Here are the hyper parameters used for baseline run  available on Table \ref{table:hyper-baseline}
+
+\begin{table}
+    \centering
+    \caption{Hyper Parameters used for baseline run}
+    \label{table:hyper-baseline}
+    \begin{tabular}{|r|l|}
+        \hline
+            Window Size & 5 \\ 
+            \hline
+            Minimum Frequency & 100 \\ 
+            \hline
+            K (Shifted PPMI) & 5 \\ 
+            \hline
+            Dimension & 300 \\
+            \hline
+            Tolerance for Analogy & 50 \\
+        \hline
+    \end{tabular}
+\end{table}
+
+\subsubsection{Running Time}
+For this run it took around 8 hours to build the co-occurrence matrix. After that calculation of PPMI and SVD each took around 1 hours to finish. 
+
+For test part also we have difficulty as the number of token is high running each analogy test is taking in order of seconds and we have around 19000 analogy questions. This also took a long time from us to have end-to-end outcome. 
+
+\subsubsection{Analogy Result}
+The result of analogy task can be found in Table \ref{table:baseline-analogy-result}
+\begin{table}
+    \centering
+    \caption{Beseline result for analogy task}
+    \label{table:baseline-analogy-result}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        Category	& Total Tokens	 & fastext-skipgram-100 \\
+        \hline
+        semantic-capitals	& 4691	& 1842 \\
+        semantic-Whole to part &	420 & 	179 \\
+        semantic-family	& 600	& 196 \\
+        semantic-currency	& 6006&	 534 \\
+        syntactic-Comparative Adjectives	&2756	&  944 \\
+        syntactic-antonym	&506	& 221 \\
+        syntactic-Superlative Adjectives&	2756	&876 \\
+        syntactic-verb	&1964 &	421  \\ 
+        \hline
+        Total & 19699 & 5231 \\
+        \hline
+    \end{tabular}
+\end{table}
+
