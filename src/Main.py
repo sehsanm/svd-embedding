@@ -1,10 +1,12 @@
 import numpy as np
 import os
 import re
-import src.evaluation
 
 from scipy import sparse
 from scipy.sparse.linalg import  svds
+
+from src import evaluation
+
 SPLIT_RE = re.compile('( |\\!|,|:|\\[|\\]|<|>|\\{|\\}|%|\\$|\\^|\\&|\\*|\\.|\\?|\\"|\\~|\\+|=،)+')
 
 
@@ -170,16 +172,16 @@ def build_model(corpus_file, index_file, matrix_file, min_freq, window_size):
 
 
 def test_model(index_file , matrix_file):
-    data_set = src.evaluation.load_analogy('../data/analogy.csv')
+    data_set = evaluation.load_analogy('../data/analogy.csv')
     index_dict, rev_index = load_vocab_index_from_file(index_file)
     print('Loading Matrix')
     embedding_matrix = np.loadtxt(matrix_file)
 
-    src.evaluation.run_analogy(embedding_matrix, index_dict, data_set, rev_index)
+    evaluation.run_analogy(embedding_matrix, index_dict, data_set, rev_index)
     test_lst = ['آمریکا' , 'ظریف' , 'خانه' ,'پول' , 'ایران' ]
     for t in test_lst:
         if t in index_dict:
-            knn = src.evaluation.find_knn(embedding_matrix[index_dict[t]][:] , embedding_matrix)
+            knn = evaluation.find_knn(embedding_matrix[index_dict[t]][:] , embedding_matrix)
             print(t)
             for x in range(20):
                 print('\t' + rev_index[knn[x]])
