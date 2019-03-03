@@ -6,7 +6,6 @@ import re
 from scipy import sparse
 from scipy.sparse.linalg import svds
 
-from src.evaluation import print_closest
 
 SPLIT_RE = re.compile('( |\\!|,|:|\\[|\\]|<|>|\\{|\\}|%|\\$|\\^|\\&|\\*|\\.|\\?|\\"|\\~|\\+|=،)+')
 
